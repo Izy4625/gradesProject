@@ -1,5 +1,5 @@
 import User ,{IUser} from "../models/userModel"
-import Klass, {Iklass, IGrade} from "../models/classModel"
+import Klass, {Iklass, IGrade, IStudent} from "../models/classModel"
 import {Types} from "mongoose"
 
 
@@ -65,4 +65,25 @@ export const addGrade = async(studentId: Types.ObjectId , teacherId: Types.Objec
   
         }
 
-
+        export const deleteGrade = async(studentId: Types.ObjectId , teacherId: Types.ObjectId ,grade:IGrade ): Promise<any| null>=>{
+    
+            const addGrade = await Klass.updateOne(
+            { teacherId: teacherId, 'studentsWithGrades.studentId': studentId }, 
+                { $pull: { 'studentsWithGrades.$.grades': grade } }, 
+                { new: true }).populate({path: "studentsWithGrades grades"})
+                console.log(addGrade)
+              
+                if(addGrade){return addGrade}
+                else{
+                    return null
+                }
+      
+            }
+    
+    
+export const getAvergaeGrades = async()=>{
+    const cursor = Klass.aggregate([
+        { $unwind: "$studentWithGrades" },
+        { $group : { _id: "$name", avgAge : {  $avg : "$.age" } } }
+    ]);
+}

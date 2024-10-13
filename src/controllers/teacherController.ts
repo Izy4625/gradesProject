@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
- import { addGrade } from "../services/userServices";
+ import { addGrade, deleteGrade } from "../services/userServices";
  import { Iklass } from "../models/classModel";
  import {AuthRequest } from "../middleware/authMiddleware"
  import {Types } from "mongoose"
@@ -13,4 +13,17 @@ import { Request, Response, NextFunction } from "express";
     if(!updatedGrades){res.status(404).json({message: "couldnt add the grade"})}
 
     res.status(200).json({message: 'succssefully add grade' + updatedGrades})
+ }
+
+ export const  deleteGradeController = async(req:AuthRequest, res: Response) =>{
+
+    const  studenid = req.params.id as unknown as Types.ObjectId
+    const teacherid = req.user?.userId as unknown as Types.ObjectId
+
+    const updatedGrades = await deleteGrade(studenid,teacherid,req.body)
+    console.log(updatedGrades)
+
+    if(!updatedGrades){res.status(404).json({message: "couldnt delete the grade"})}
+
+    res.status(200).json({message: 'succssefully deleted grade' + updatedGrades})
  }
