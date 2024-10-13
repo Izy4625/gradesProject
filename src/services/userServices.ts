@@ -11,8 +11,7 @@ export const createUser = async(user:IUser): Promise<Iklass | null>=>{
    const allClassesName: myObject[] = await allClasses();
    let result: any[] = allClassesName.map(({ name }) => name)
 
-   console.log(result)
-   console.log(role)
+  
   
     if(role === "student"){
         if(result.includes(user.class)){
@@ -51,20 +50,19 @@ catch(err){
 }
 }
 
-export const addGrade = async(studentId: Types.ObjectId , teacherId: Types.ObjectId ,grade:IGrade ): Promise<Iklass | null>=>{
-    try{
-       
-        const addGrade = await Klass.findOneAndUpdate(
+export const addGrade = async(studentId: Types.ObjectId , teacherId: Types.ObjectId ,grade:IGrade ): Promise<any| null>=>{
+    
+        const addGrade = await Klass.updateOne(
         { teacherId: teacherId, 'studentsWithGrades.studentId': studentId }, 
             { $push: { 'studentsWithGrades.$.grades': grade } }, 
-            { new: true })
+            { new: true }).populate({path: "studentsWithGrades"})
+            console.log(addGrade)
+          
             if(addGrade){return addGrade}
             else{
                 return null
             }
   
-    }
-    catch(err){
-        console.log(err)
-        return null
-    }}
+        }
+
+

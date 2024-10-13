@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { connectToDatabase } from './services/database';
 import authRoutes from './routes/authRoutes'
+import teacherRouter from './routes/teacherRoutes';
 // import userRoutes from './routes/userRoutes'
 import cookieParser from 'cookie-parser';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -39,6 +40,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 connectToDatabase();
 
 app.use('/auth', authRoutes);
+app.use('/users', teacherRouter);
 // app.use('/users', userRoutes)
 
 const PORT = process.env.PORT || 3010;
