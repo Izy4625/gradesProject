@@ -80,10 +80,34 @@ export const addGrade = async(studentId: Types.ObjectId , teacherId: Types.Objec
       
             }
     
-    
-export const getAvergaeGrades = async()=>{
-    const cursor = Klass.aggregate([
-        { $unwind: "$studentWithGrades" },
-        { $group : { _id: "$name", avgAge : {  $avg : "$.age" } } }
-    ]);
-}
+         export const getAverageGrades = async (klassId: Types.ObjectId): Promise<number | null> => {
+                try {
+                    const klass = await Klass.findOne({teacherId: klassId}, { studentsWithGrades: 1 }); 
+                    console.log(klass)
+            
+                    if (klass && klass.studentsWithGrades && klass.studentsWithGrades.length > 0) {
+                        let totalGrades: number = 0;
+                        let totalCount = 0;
+            
+                  
+                        klass.studentsWithGrades.forEach(student => {
+                            if (student.grades) {
+                                totalCount += student.grades.length; 
+                                student.grades.forEach(gradeObj => {
+                                    totalGrades += gradeObj.grade; 
+                                });
+                            }
+                        });
+            
+                        // Calculate the average
+                        const average = totalCount > 0 ? totalGrades / totalCount : 0; // Avoid division by zero
+                        console.log('Average Grade:', average);
+                        return average;
+                    } else {
+                        console.log('Class not found or no students with grades');
+                        return null
+                    }
+                }catch(err){
+                    console.log(err)
+                    return null
+                }}

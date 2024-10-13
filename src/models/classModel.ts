@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 import { IUser } from "./userModel";
 
 export interface IGrade {
-    grade: Number,
+    grade: number,
     comment: string
 }
 export interface Iklass extends Document {

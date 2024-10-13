@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { addGradeController ,deleteGradeController } from "../controllers/teacherController";
+import { addGradeController ,deleteGradeController, getAverageGradesController } from "../controllers/teacherController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { errorHandler } from "../utils/errorHandler";
 
 const teacherRouter = Router();
-teacherRouter.get("")
+teacherRouter.get("/grades",authMiddleware, errorHandler(getAverageGradesController))
 teacherRouter.post("/grades/:id", authMiddleware, errorHandler(addGradeController))
 teacherRouter.delete("/grades/:id", authMiddleware, errorHandler(deleteGradeController))
 
