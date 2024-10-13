@@ -8,11 +8,11 @@ export interface IUser extends Document  {
         name: string,
         email: string,
         password: string,
-        class: string
-        role: "student" | "teacher"
+        class: string,
+        role: "student" | "teacher",
+        comparePassword(userPassword: string): Promise<boolean>
            
 }
-
 
 const userSchema = new Schema<IUser> ({
     name: {
@@ -34,6 +34,9 @@ const userSchema = new Schema<IUser> ({
       class: {type: String,
         required: true
       },
+      role: {type: String,
+        enum: ["teacher","student"]
+      }
    
 })
 
@@ -48,5 +51,5 @@ userSchema.pre<IUser>('save', async function (next) {
   userSchema.methods.comparePassword = async function (userPassword: string): Promise<boolean> {
     return await bcrypt.compare(userPassword, this.password)
   }
-  export default mongoose.model<IUser>("Students", userSchema);
+  export default mongoose.model<IUser>("Users", userSchema);
   

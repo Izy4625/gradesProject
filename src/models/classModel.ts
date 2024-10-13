@@ -1,19 +1,19 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 import { IUser } from "./userModel";
 
-interface IGrade {
+export interface IGrade {
     grade: Number,
     comment: string
 }
-export interface IClass extends Document {
+export interface Iklass extends Document {
     name: string,
     teacherId : Types.ObjectId,
-    studentsWithGrades: IStudent[]
+    studentsWithGrades?: IStudent[]
 }
 
 export interface IStudent{
     studentId: Types.ObjectId
-    grades: IGrade[]
+    grades?: IGrade[]
 }
 const gradeSchema = new Schema<IGrade> ({
     grade: {
@@ -33,7 +33,7 @@ const studentSchema = new Schema<IStudent> ({
     grades: [gradeSchema]
 
 })
-const classSchema = new Schema<IClass>({
+const classSchema = new Schema<Iklass>({
     name: {
         type: String,
         required: true,
@@ -44,4 +44,4 @@ const classSchema = new Schema<IClass>({
     },
     studentsWithGrades: [studentSchema],
 })
-export default mongoose.model<IClass>("Classes", classSchema);
+export default mongoose.model<Iklass>("Classes", classSchema);
