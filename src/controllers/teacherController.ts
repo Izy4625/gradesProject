@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
- import { addGrade, deleteGrade, getAverageGrades } from "../services/userServices";
+ import { addGrade, deleteGrade, getAverageGrades, updateGrade} from "../services/userServices";
  import { Iklass } from "../models/classModel";
  import {AuthRequest } from "../middleware/authMiddleware"
  import {Types } from "mongoose"
@@ -34,4 +34,15 @@ import { Request, Response, NextFunction } from "express";
 
     if(!average){res.status(400).json({message: "could not get the average"})}
     res.status(200).json({message: "this is the average of all the grades in your class" + average})
+ }
+
+ export const updateScoreController = async(req:AuthRequest, res: Response) =>{
+ const  studenid = req.params.id as unknown as Types.ObjectId
+    const teacherid = req.user?.userId as unknown as Types.ObjectId;
+    const gradeId = req.body.gradeId as unknown as Types.ObjectId;
+    const grade = req.body.grade
+    const newGrades = await updateGrade(teacherid,studenid,gradeId,grade);
+    console.log(newGrades)
+    if(!newGrades){res.status(400).json({message: "could not update grade"});return};
+    res.status(200).json({message: "succsesfully updates score" + newGrades});
  }

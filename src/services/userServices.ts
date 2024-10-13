@@ -12,16 +12,20 @@ export const createUser = async(user:IUser): Promise<Iklass | null>=>{
    let result: any[] = allClassesName.map(({ name }) => name)
 
   
-  
     if(role === "student"){
         if(result.includes(user.class)){
         const newUser = await User.create(user);
+        if(newUser._id){
+            const id = newUser._id as unknown as Types.ObjectId
+        const newStudent: IStudent = {
+            studentId : id
+        } 
 
-        const class1 = await Klass.findOneAndUpdate({name: user.class}, {$push: {studentsWithGrades: newUser._id}},{new:true});
+        const class1 = await Klass.findOneAndUpdate({name: user.class}, {$push: {studentsWithGrades: newStudent}},{new:true});
         return class1}
         else{
             return null
-        }
+        }}
 
     }
     else{
@@ -79,7 +83,22 @@ export const addGrade = async(studentId: Types.ObjectId , teacherId: Types.Objec
                 }
       
             }
-    
+         export async function updateGrade(teacherId: Types.ObjectId, studentid: Types.ObjectId, gradeId: Types.ObjectId, newGrade: number):Promise<any|null> {
+                try {
+                    console.log(gradeId)
+                    const updatedGrades = await Klass.updateOne(
+                        { teacherId: teacherId, 'studentsWithGrades.studentId': studentid , "studentsWithGrades.$.grades._id": gradeId }, 
+                            { $pull: { 'studentsWithGrades.$.grades.grade': newGrade } }, 
+                  );
+                  return updatedGrades
+                  console.log("Updated Parent:", updatedGrades);
+                } catch (error) {
+                    
+                  console.error("Error updating nested array:", error);
+                  return null
+                }
+              }
+
          export const getAverageGrades = async (klassId: Types.ObjectId): Promise<number | null> => {
                 try {
                     const klass = await Klass.findOne({teacherId: klassId}, { studentsWithGrades: 1 }); 
