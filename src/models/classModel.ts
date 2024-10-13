@@ -1,11 +1,39 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
+import { IUser } from "./userModel";
 
-export interface Iclass extends Document {
+interface IGrade {
+    grade: Number,
+    comment: string
+}
+export interface IClass extends Document {
     name: string,
     teacherId : Types.ObjectId,
-    students: Types.ObjectId[]
+    studentsWithGrades: IStudent[]
 }
-const classSchema = new Schema<Iclass>({
+
+export interface IStudent{
+    studentId: Types.ObjectId
+    grades: IGrade[]
+}
+const gradeSchema = new Schema<IGrade> ({
+    grade: {
+        type: Number,
+        required: true,
+        min: [0, "test scores can't be less then 0"],
+        max: [100, "test Scores can't be more then 100"]
+    },
+ comment: {
+    type: String,
+    maxlength: [100, "comments canot be longer then 100 characters"],
+    required: true
+ }
+})
+const studentSchema = new Schema<IStudent> ({
+    studentId: {type: Schema.Types.ObjectId , ref: "Users", required: true},
+    grades: [gradeSchema]
+
+})
+const classSchema = new Schema<IClass>({
     name: {
         type: String,
         required: true,
@@ -14,6 +42,6 @@ const classSchema = new Schema<Iclass>({
     teacherId:{
         type: Schema.Types.ObjectId, ref: "Teachers", required: true
     },
-    students: [{type: Schema.Types.ObjectId, ref : "Students"}],
+    studentsWithGrades: [studentSchema],
 })
-export default mongoose.model<Iclass>("Students", classSchema);
+export default mongoose.model<IClass>("Classes", classSchema);
